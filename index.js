@@ -3,7 +3,7 @@ const {select, input, checkbox} = require('@inquirer/prompts')
 let meta = {
     value: 'Enviar ao menos um commit para o github',
     checked: false
-    }
+}
 
 let metas = [meta]
 
@@ -28,26 +28,19 @@ const listarMetas = async () => {
     console.clear();
     const respostas = await checkbox({
         message: "Use setas para mudar de meta, o espaço para marcar ou desmarcar e o Enter para finalizar > ",
-        choices: [...metas]
+        choices: metas.map(meta => ({
+            name: meta.value,
+            value: meta.value,
+            checked: meta.checked
+        }))
     })
 
-    if(respostas.length == 0){
-        console.log("Nenhuma meta selecionada.")
-        return
-    }
+    metas.forEach((meta) => {
+        // Verifica se a meta foi selecionada para marcar/desmarcar
+        meta.checked = respostas.includes(meta.value);
+    });
+
     console.log(metas);
-
-    metas.forEach((m)=> {
-        m.checked = false;
-    })
-
-    respostas.forEach((resposta)=>{
-        const meta = metas.find((m)=>{
-            return m.value == resposta
-        })
-
-        meta.checked = true;
-    })
 }
 
 const start = async() => { //Função assíncrona
