@@ -24,7 +24,11 @@ const cadastrarMeta = async () => {
     
 }
 
-const listarMetas = async () => {
+const removerMeta = async() => {
+    console.clear();   
+}
+
+const listarMetas = async() => {
     console.clear();
     const respostas = await checkbox({
         message: "Use setas para mudar de meta, o espaço para marcar ou desmarcar e o Enter para finalizar > ",
@@ -33,8 +37,13 @@ const listarMetas = async () => {
             value: meta.value,
             checked: meta.checked
         }))
-    })
+    })  
+    return respostas;
+}
 
+
+const marcarMetas = async () => {
+    const respostas = await listarMetas();
     metas.forEach((meta) => {
         // Verifica se a meta foi selecionada para marcar/desmarcar
         meta.checked = respostas.includes(meta.value);
@@ -54,6 +63,10 @@ const start = async() => { //Função assíncrona
                     value: "cadastrar" //O valor escolhido será entrada para option
                 },
                 {
+                    name: "Marcar metas",
+                    value: "marcar"
+                },
+                {
                     name: "Listar metas",
                     value: "listar"
                 },
@@ -69,6 +82,10 @@ const start = async() => { //Função assíncrona
             case "cadastrar":
                 console.log("Selecionou Cadastro")
                 await cadastrarMeta();
+                break
+            case "marcar":
+                console.log("Selecionou Listagem")
+                await marcarMetas();
                 break
             case "listar":
                 console.log("Selecionou Listagem")
