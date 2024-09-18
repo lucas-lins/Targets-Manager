@@ -24,8 +24,47 @@ const cadastrarMeta = async () => {
     
 }
 
-const removerMeta = async() => {
-    console.clear();   
+const removerMetas = async() => {
+    console.clear();
+    if (metas.length === 0) {
+        console.log("Não há metas para remover.");
+        return;
+    }
+
+    const metaParaRemover = await select({
+        message: "Selecione uma meta para remover: ",
+        choices: metas.map(meta => ({
+            name: meta.value,
+            value: meta.value
+        }))
+    })
+
+    console.clear();
+    console.log(`Tem certeza que deseja remover a meta: "${metaParaRemover}" ?`);
+    const confirmar = await select ({
+        message: "Confirmar exclusão?",
+        choices: [
+            {
+                name: "Sim",
+                value: "sim"
+            },
+            {
+                name: "Não",
+                value: "nao"
+            }
+        ]
+    })
+
+    switch(confirmar){
+        case "sim":
+            metas = metas.filter(meta => meta.value !== metaParaRemover);
+            console.log(`Meta "${metaParaRemover}" removida com sucesso.`);
+            break;
+        case "nao":
+            console.log(`Exclusão cancelada`);
+            break;
+
+    }
 }
 
 const listarMetas = async() => {
@@ -71,6 +110,10 @@ const start = async() => { //Função assíncrona
                     value: "listar"
                 },
                 {
+                    name: "Remover metas",
+                    value: "remover"
+                },
+                {
                     name: "Sair",
                     value: "sair"
                 },
@@ -84,12 +127,16 @@ const start = async() => { //Função assíncrona
                 await cadastrarMeta();
                 break
             case "marcar":
-                console.log("Selecionou Listagem")
+                console.log("Selecionou marcação")
                 await marcarMetas();
                 break
             case "listar":
                 console.log("Selecionou Listagem")
                 await listarMetas();
+                break
+            case "remover":
+                console.log("Selecionou remoção")
+                await removerMetas();
                 break
             case "sair":
                 console.log("Sair do programa")
