@@ -1,27 +1,38 @@
 const {select, input, checkbox} = require('@inquirer/prompts')
+const fs = require('fs');
 
-let meta = {
-    value: 'Enviar ao menos um commit para o github',
-    checked: false
-}
+const arquivoMetas = './metas.json';
 
-let metas = [meta]
+const importarMetas = () => {
+    try {
+        const data = fs.readFileSync(arquivoMetas, 'utf-8');
+        return JSON.parse(data);
+    } catch (error) { return[]; }
+};
+
+const salvarMetas = () => {
+    fs.writeFileSync(arquivoMetas, JSON.stringify(metas, null, 2), 'utf-8')
+};
+
+let metas = importarMetas();
 
 const cadastrarMeta = async () => {
     console.clear();
-    const meta = await input({
+    const novaMeta = await input({
         message: "Digite uma meta: "
     })
 
-    if(meta.length == 0){
+    if(novaMeta.length == 0){
         console.log("A meta precisa ter um título.")
         return
     }
 
     metas.push(
-        {value: meta, checked: false}
+        {value: novaMeta, checked: false}
     )
-    
+
+    salvarMetas(); // Salvar metas no arquivo após cadastrar
+    console.log(`Meta "${novaMeta}" cadastrada com sucesso!`);
 }
 
 const removerMetas = async() => {
@@ -58,6 +69,7 @@ const removerMetas = async() => {
     switch(confirmar){
         case "sim":
             metas = metas.filter(meta => meta.value !== metaParaRemover);
+            salvarMetas();
             console.log(`Meta "${metaParaRemover}" removida com sucesso.`);
             break;
         case "nao":
@@ -69,6 +81,28 @@ const removerMetas = async() => {
 
 const listarMetas = async() => {
     console.clear();
+    const filtro = await select({
+        message: "Que metas você quer listar? > ",
+        choices: [
+            {name: "Todas as metas", value: "todas"},
+            {name: "Metas concluídas", value: "concluidas"},
+            {name: "Metas não concluídas", value: "pendentes"}
+        ]
+    })
+
+    let metasFiltradas = metas;
+    if (filtro === "concludas") {
+        metasFiltradas = metas.filter(meta => meta.checked);
+    }
+    else if (filtro === "pendentes") {
+        metasFiltradas = metas.filter(meta => !meta.checked)
+    }
+
+    if (metasFiltradas.length === 0) {
+        console.log("Não há metas para listar.");
+        return;
+    }
+
     const respostas = await checkbox({
         message: "Use setas para mudar de meta, o espaço para marcar ou desmarcar e o Enter para finalizar > ",
         choices: metas.map(meta => ({
@@ -88,6 +122,8 @@ const marcarMetas = async () => {
         meta.checked = respostas.includes(meta.value);
     });
 
+    salvarMetas();
+    console.log("Metas atualizadas:");
     console.log(metas);
 }
 

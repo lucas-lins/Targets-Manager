@@ -1,8 +1,8 @@
-- Criar metas
-- Listar metas
+- [done] Criar metas
+- [done] Listar metas 
     - Listar metas realizadas
     - Listar metas abertas
-- Marcar metas como realizadas
-- Desmarcar metas como realizadas
-- Remover metas
-- Sistema de mensagens
+- [done] Marcar metas como realizadas
+- [done] Desmarcar metas como realizadas
+- [done] Remover metas
+- [done] Sistema de mensagens
